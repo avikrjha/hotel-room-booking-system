@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model city {
+  id                      Int                       @id(map: "city_pk") @default(autoincrement())
+  name                    String?                   @db.VarChar
+  is_active               Boolean?                  @default(true)
+  created_at              DateTime?                 @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime?                 @default(now()) @db.Timestamptz(6)
+  guest                   guest[]
+  hotel_city_assignmenent hotel_city_assignmenent[]
+  rom_hotel_assignment    rom_hotel_assignment[]
+}
+
+model guest {
+  id           Int       @id(map: "guest_pk") @default(autoincrement())
+  user_id      Int
+  room_id      Int
+  is_active    Boolean?  @default(true)
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime? @default(now()) @db.Timestamptz(6)
+  hotel_id     Int?
+  city_id      Int?
+  booking_date DateTime? @db.Date
+  check_in     DateTime? @db.Timestamptz(6)
+  check_out    DateTime? @db.Timestamptz(6)
+  city         city?     @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "guest_city_fk")
+  hotels       hotels?   @relation(fields: [hotel_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "guest_hotels_fk")
+  users        users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "guest_users_fk")
+}
+
+model hotel_city_assignmenent {
+  id         Int       @id(map: "hotel_city_assignmenent_pk") @default(autoincrement())
+  hotel_id   Int
+  city_id    Int
+  is_active  Boolean?  @default(true)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  city       city      @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "hotel_city_assignmenent_city_fk")
+  hotels     hotels    @relation(fields: [hotel_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "hotel_city_assignmenent_hotels_fk")
+}
+
+model hotels {
+  id                      Int                       @id(map: "hotels_pk") @default(autoincrement())
+  name                    String                    @db.VarChar
+  details                 String?                   @db.VarChar
+  picture                 String?                   @db.VarChar
+  is_active               Boolean?                  @default(true)
+  created_at              DateTime?                 @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime?                 @default(now()) @db.Timestamptz(6)
+  guest                   guest[]
+  hotel_city_assignmenent hotel_city_assignmenent[]
+  rom_hotel_assignment    rom_hotel_assignment[]
+}
+
+model rom_hotel_assignment {
+  id           Int       @id(map: "rom_hotel_assignment_pk") @default(autoincrement())
+  hotel_id     Int
+  room_details String?   @db.VarChar
+  picture      String?   @db.VarChar
+  is_active    Boolean?  @default(true)
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime? @default(now()) @db.Timestamptz(6)
+  room_id      Int?
+  city_id      Int?
+  city         city?     @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "rom_hotel_assignment_city_fk")
+  hotels       hotels    @relation(fields: [hotel_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "rom_hotel_assignment_hotels_fk")
+}
+
+model users {
+  id         Int       @id(map: "users_pk") @default(autoincrement())
+  name       String?   @db.VarChar
+  contact_no String    @db.VarChar
+  email      String    @db.VarChar
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  is_actuve  Boolean?  @default(true)
+  password   String    @db.VarChar
+  guest      guest[]
+
+  @@unique([contact_no, email], map: "users_unique")
+}
