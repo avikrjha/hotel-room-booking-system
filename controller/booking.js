@@ -665,7 +665,6 @@ module.exports = {
                  })  
                  // if no room is available 
                  if (availableRoom.length < 1){
-                    console.log("no room is available for this time")
                     return res.status(200).json({
                         code : 25,
                         msg : "no room is available for this time"
@@ -703,7 +702,7 @@ module.exports = {
                             id : checkBooking.id 
                         }
                     })
-                    console.log("Check In time updated succesfully with different room")
+             
                     return res.status(200).json({
                         code : 20 ,
                         msg : "Check In time updated succesfully with different room",
